@@ -6,7 +6,7 @@
   ],
   "dependencies": [],
   "documentation": "https://github.com/mwinterstorm/ha-xdrip-local",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/mwinterstorm/ha-xdrip-local/issues",
   "config_flow": true

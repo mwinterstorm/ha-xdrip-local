@@ -3,10 +3,10 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_IP_ADDRESS, CONF_API_SECRET
+from homeassistant.const import CONF_IP_ADDRESS
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_API_SECRET
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
