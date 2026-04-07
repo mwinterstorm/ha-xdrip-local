@@ -41,11 +41,15 @@ class XDripSensor(SensorEntity):
 
     @property
     def should_poll(self):
+        # Disable default polling because we use custom tiered backoff
         return False
 
-async def async_update(self, *_):
+    async def async_update(self, *_):
         """Fetch data and schedule the next check with tiered backoff."""
         await self._fetch_data()
+        
+        # Tell Home Assistant to update the UI with the fresh data
+        self.async_write_ha_state()
         
         now_ms = datetime.now(timezone.utc).timestamp() * 1000
         age_ms = now_ms - self._last_reading_time
@@ -57,13 +61,18 @@ async def async_update(self, *_):
             seconds_to_wait = ((300000 - age_ms) / 1000) + 5
             self._attributes["connection_status"] = "Synchronized"
         
+        elif age_min < 6:
+            # TIER 2A: Hunting (New data is expected any second)
+            seconds_to_wait = 5
+            self._attributes["connection_status"] = "Synchronized"
+
         elif age_min < 10:
-            # TIER 2: Hunting (New data is expected any second)
+            # TIER 2B: Hunting (New data still expected)
             seconds_to_wait = 15
             self._attributes["connection_status"] = "Hunting"
             
         elif age_min < 30:
-            # TIER 3: Stale (Phone might be in another room)
+            # TIER 3: Stale 
             seconds_to_wait = 60
             self._attributes["connection_status"] = "Stale (Slow Poll)"
             
@@ -85,6 +94,7 @@ async def async_update(self, *_):
         headers = {"api-secret": hashed_secret}
         
         try:
+            # Timeout is 10 seconds. If the phone is off Tailscale, it gracefully fails here
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers=headers, timeout=10) as response:
                     if response.status == 200:
@@ -107,4 +117,6 @@ async def async_update(self, *_):
                         self._state = "Auth Error"
         except Exception as e:
             _LOGGER.debug(f"Connection failed: {e}")
-            self._state = "Unavailable"
+            # Do NOT reset the state to Unavailable here, otherwise the dashboard will flicker to 
+            # "Unavailable" every time you lose signal for 2 minutes. Just let it show the old number 
+            # until the Tiered Backoff pushes it to Stale/Offline.
