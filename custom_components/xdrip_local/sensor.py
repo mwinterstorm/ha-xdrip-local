@@ -3,11 +3,8 @@ import aiohttp
 import hashlib
 import asyncio
 from datetime import datetime, timedelta, timezone
-import voluptuous as vol
-
-from homeassistant.components.sensor import SensorEntity, PLATFORM_SCHEMA
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_IP_ADDRESS, CONF_API_SECRET
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import async_track_point_in_time
 import homeassistant.util.dt as dt_util
 
@@ -15,14 +12,10 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "xdrip_local"
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_IP_ADDRESS): cv.string,
-    vol.Required(CONF_API_SECRET): cv.string,
-})
-
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    ip_address = config.get(CONF_IP_ADDRESS)
-    api_secret = config.get(CONF_API_SECRET)
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Set up the sensor platform from a config entry."""
+    ip_address = config_entry.data.get(CONF_IP_ADDRESS)
+    api_secret = config_entry.data.get(CONF_API_SECRET)
     
     sensor = XDripSensor(hass, ip_address, api_secret)
     async_add_entities([sensor], True)

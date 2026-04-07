@@ -33,39 +33,35 @@ The easiest way to install this integration is using the [Home Assistant Communi
 
 ## 🚀 Configuration
 
-Add the following to your `configuration.yaml` file. 
+This integration is configured directly from the Home Assistant UI. No YAML is required!
 
-```yaml
-sensor:
-  - platform: xdrip_local
-    ip_address: "192.168.X.X"  # Your phone's Local Wi-Fi or Tailscale IP
-    api_secret: "your_xdrip_api_secret" # Must match the secret set in xDrip+
-```
+1. Go to **Settings** -> **Devices & Services** in Home Assistant.
+2. Click **+ Add Integration** in the bottom right corner.
+3. Search for "**xDrip Local Bridge**" and select it.
+4. Enter your phone's **IP Address** (e.g., `192.168.1.100` or a Tailscale IP like `100.x.y.z`).
+5. Enter your **API Secret** (must match the secret set in xDrip+).
 
-Note: If you have authentication disabled in xDrip (not recommended), you must still provide the api_secret key in the YAML, but you can leave the string empty "".
+*Note: If you have authentication disabled in xDrip (not recommended), you can leave the API Secret blank.*
 
 ## 📊 Entities and Attributes
-Once configured, the integration creates a primary sensor: sensor.macdrip_glucose.
 
-State: The current blood glucose level in mmol/L.
+Once configured, the integration creates a primary sensor: `sensor.macdrip_glucose`.
 
-Attributes:
+**State:** The current blood glucose level in `mmol/L`.
+
+**Attributes:**
 You can extract these attributes to build custom dashboard cards or automations.
 
-direction: The trend arrow (e.g., Flat, SingleUp, FortyFiveDown).
-
-iob: Current Insulin on Board (extracted from companion apps or native xDrip treatments).
-
-cob: Current Carbs on Board.
-
-reading_age_min: Exactly how many minutes old the current data point is.
-
-connection_status: The current state of the smart poller (Synchronized, Hunting, Stale, Offline).
+* `direction`: The trend arrow (e.g., Flat, SingleUp, FortyFiveDown).
+* `iob`: Current Insulin on Board (extracted from companion apps or native xDrip treatments).
+* `cob`: Current Carbs on Board.
+* `reading_age_min`: Exactly how many minutes old the current data point is.
+* `connection_status`: The current state of the smart poller (Synchronized, Hunting, Stale, Offline).
 
 ## 💡 Example Automation
 Flash a smart light red if your blood sugar is dropping below 4.5 mmol/L.
 
-```YAML
+```yaml
 alias: "Low Glucose Alert"
 trigger:
   - platform: numeric_state
@@ -83,3 +79,4 @@ action:
     data:
       color_name: red
       flash: short
+```
