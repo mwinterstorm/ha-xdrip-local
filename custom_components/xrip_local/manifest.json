@@ -1,0 +1,12 @@
+{
+  "domain": "xdrip_local",
+  "name": "xDrip Local Bridge",
+  "codeowners": [
+    "@mwinterstorm"
+  ],
+  "dependencies": [],
+  "documentation": "https://github.com/mwinterstorm/ha-xdrip-local",
+  "version": "0.0.1",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/mwinterstorm/ha-xdrip-local/issues"
+}
