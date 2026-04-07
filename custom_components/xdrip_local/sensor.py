@@ -49,7 +49,8 @@ class XDripSensor(SensorEntity):
         await self._fetch_data()
         
         # Tell Home Assistant to update the UI with the fresh data
-        self.async_write_ha_state()
+        if self.entity_id:
+            self.async_write_ha_state()
         
         now_ms = datetime.now(timezone.utc).timestamp() * 1000
         age_ms = now_ms - self._last_reading_time
